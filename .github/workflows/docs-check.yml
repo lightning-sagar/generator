@@ -1,6 +1,12 @@
 name: Check API Docs Generation
 
 on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "apps/generator/**"
+      - ".github/workflows/docs-check.yml"
   pull_request:
     paths:
       - "apps/generator/**"
