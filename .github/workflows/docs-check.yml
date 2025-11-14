@@ -1,0 +1,40 @@
+name: Check API Docs Generation
+
+on:
+  pull_request:
+    paths:
+      - "apps/generator/**"
+      - ".github/workflows/docs-check.yml"
+
+jobs:
+  check-docs:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: apps/generator
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run docs generation
+        run: npm run docs
+
+      - name: Check for uncommitted changes
+        run: |
+          if [[ -n "$(git status --porcelain docs/api.md)" ]]; then
+            echo "❌ docs/api.md is outdated. Run 'npm run docs' and commit the changes."
+            git diff docs/api.md
+            exit 1
+          else
+            echo "✅ docs/api.md is up-to-date."
+          fi
